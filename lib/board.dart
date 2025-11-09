@@ -75,8 +75,9 @@ class _ChessboardState extends State<Chessboard> {
                 int row = index ~/ config.boardCols; // 计算行号
                 int col = index % config.boardCols; // 计算列号
                 return GestureDetector(
-                  onTap: () => {_handleTap(row, col)},
-                  onLongPress: () => {_handleLongPress(row, col)},
+                  onTap: () => _handleTap(row, col),  // 点按
+                  onLongPress: () => _handleLongPress(row, col),  // 长按
+                  onSecondaryTap: () => _handleLongPress(row, col),  // 鼠标右键 == 长按
                   child: _itemCell(row, col),
                 );
               },
@@ -130,6 +131,11 @@ class _ChessboardState extends State<Chessboard> {
   Container _uncoveredDisplay(row, col) {
     int num = _countMinesAround(row, col);
     bool isMine = config.boardStates[row][col][0];
+
+    if (isMine) {
+      config.setGameOver();
+      Navigator.pop(context);
+    }
 
     return Container(
       child: Center(

@@ -9,10 +9,12 @@ class GameConfig {
   late int flagNumber;
   late double boardWidth;
   late double boardHeight;
+  late bool _isGameContinue;
   // 网格状态：Tuple<bool,int>，bool表示是否埋雷，int表示显示状态（0 遮盖，1 插旗，2 无遮盖）
   late List<List<List<dynamic>>> boardStates;
 
   GameConfig({required this.boardRows, required this.boardCols, required this.mineNumber}) {
+    _isGameContinue = true;
     gameReset();
   }
 
@@ -25,8 +27,12 @@ class GameConfig {
     flagNumber = 0;
   }
 
-  bool gameContinue() {
-    return true;
+  bool isGameContinue() {
+    return _isGameContinue;
+  }
+
+  void setGameOver() {
+    _isGameContinue = false;
   }
 
   void _spawnMines() {

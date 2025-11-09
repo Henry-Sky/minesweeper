@@ -20,8 +20,36 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: GamePage(),
+      home: MenuPage(),
     );
+  }
+}
+
+class MenuPage extends StatelessWidget {
+
+  // 游戏配置文件
+  final gameConfig = GameConfig(boardRows: 18, boardCols: 32, mineNumber: 99);
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final appbarHeight = screenHeight * 0.1;
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      appBar: CustomAppBar(title: "Minesweeper", height: appbarHeight, config: gameConfig,),
+      body: Center(
+        child: ElevatedButton(
+            onPressed: ()=> _onPressedEvent(context),
+            child: Text("开始游戏")
+        ),
+      )
+    );
+  }
+  
+  void _onPressedEvent(context) {
+    Navigator.push(context, MaterialPageRoute(builder: (context)=> GamePage()));
+    
   }
 }
 
