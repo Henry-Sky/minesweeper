@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:tuple/tuple.dart';
 
 class GameConfig {
@@ -10,20 +9,18 @@ class GameConfig {
   late double boardWidth;
   late double boardHeight;
   late bool _isGameContinue;
+  late bool firstTap;
   // 网格状态：Tuple<bool,int>，bool表示是否埋雷，int表示显示状态（0 遮盖，1 插旗，2 无遮盖）
   late List<List<List<dynamic>>> boardStates;
 
   GameConfig({required this.boardRows, required this.boardCols, required this.mineNumber}) {
-    _isGameContinue = true;
     gameReset();
   }
 
   void gameReset() {
-    boardStates = List.generate(
-      boardRows,
-          (i) => List.generate(boardCols, (j) => [false, 0]),
-    );
-    _spawnMines();
+    _isGameContinue = true;
+    firstTap = true;
+    spawnMines();
     flagNumber = 0;
   }
 
@@ -35,7 +32,12 @@ class GameConfig {
     _isGameContinue = false;
   }
 
-  void _spawnMines() {
+  void spawnMines() {
+    boardStates = List.generate(
+      boardRows,
+          (i) => List.generate(boardCols, (j) => [false, 0]),
+    );
+
     int cnt = 0;
     Set<Tuple2<int, int>> mines = {};
     while (cnt < mineNumber) {
@@ -52,13 +54,13 @@ class GameConfig {
 
   int countMinesCovered() {
     int cnt = 0;
-    boardStates.forEach((innerList) {
-      innerList.forEach((element){
+    for (var innerList in boardStates) {
+      for (var element in innerList) {
         if (element[0] == true && (element[1] == 0 || element[1] == 1)) {
           cnt ++;
         }
-      });
-    });
+      }
+    }
     return cnt;
   }
 }

@@ -5,10 +5,10 @@ import 'board.dart';
 import 'config.dart';
 
 class GamePage extends StatelessWidget {
-  GamePage({super.key});
+  GamePage({super.key, required this.gameConfig});
 
   // 游戏配置文件
-  final gameConfig = GameConfig(boardRows: 18, boardCols: 32, mineNumber: 99);
+  late GameConfig gameConfig;
 
   @override
   Widget build(BuildContext context) {

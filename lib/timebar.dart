@@ -27,12 +27,16 @@ class _TimeBarState extends State<TimeBar> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (!config.isGameContinue()) {
+        Navigator.pop(context);
+      }
       if (_secondsRemaining > 0) {
         setState(() {
           _secondsRemaining--;
         });
       } else {
+        config.setGameOver();  // 游戏结束
         timer.cancel();
       }
     });
@@ -44,14 +48,6 @@ class _TimeBarState extends State<TimeBar> {
     String minuteStr = minute < 10 ? "0$minute" : "$minute";
     String secondStr = second < 10 ? "0$second" : "$second";
     return "$minuteStr:$secondStr";
-  }
-
-  String _getMineInfo() {
-    int minesNow = config.countMinesCovered();
-    int minesAll = config.mineNumber;
-    String nowStr = minesNow < 10 ? "0$minesNow" : "$minesNow";
-    String allStr = minesAll < 10 ? "0$minesAll" : "$minesAll";
-    return "$nowStr/$allStr";
   }
 
   String _getFlagInfo() {
@@ -73,7 +69,7 @@ class _TimeBarState extends State<TimeBar> {
     double maxWidth = MediaQuery.of(context).size.width;
     double maxHeight = widget.height;
     double paddingWidth = 8.0;
-    Radius borderRadius = Radius.circular(10.0);
+    Radius borderRadius = const Radius.circular(10.0);
     double borderWidth = 4.0;
     BorderSide borderSide = BorderSide(color: Colors.white, width: borderWidth);
     // 游戏信息获取

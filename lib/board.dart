@@ -60,7 +60,7 @@ class _ChessboardState extends State<Chessboard> {
         height: boardHeight,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.green, width: borderWidth),
-          borderRadius: BorderRadius.all(Radius.circular(2.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(2.0)),
         ),
         child: Center(
           child: Container(
@@ -75,9 +75,9 @@ class _ChessboardState extends State<Chessboard> {
                 int row = index ~/ config.boardCols; // 计算行号
                 int col = index % config.boardCols; // 计算列号
                 return GestureDetector(
-                  onTap: () => _handleTap(row, col),  // 点按
-                  onLongPress: () => _handleLongPress(row, col),  // 长按
-                  onSecondaryTap: () => _handleLongPress(row, col),  // 鼠标右键 == 长按
+                  onTap: () => _handleTap(row, col), // 点按
+                  onLongPress: () => _handleLongPress(row, col), // 长按
+                  onSecondaryTap: () => _handleLongPress(row, col), // 鼠标右键
                   child: _itemCell(row, col),
                 );
               },
@@ -90,7 +90,6 @@ class _ChessboardState extends State<Chessboard> {
   }
 
   Container _itemCell(row, col) {
-    bool stateMine = config.boardStates[row][col][0];
     int stateDisplay = config.boardStates[row][col][1];
     // Display 0: 网格被遮盖
     if (stateDisplay == 0) {
@@ -114,7 +113,7 @@ class _ChessboardState extends State<Chessboard> {
       decoration: BoxDecoration(
         color: Colors.grey,
         border: Border.all(color: Colors.brown, width: cellWidth * 0.05),
-        borderRadius: BorderRadius.all(Radius.circular(2.0)),
+        borderRadius: const BorderRadius.all(Radius.circular(2.0)),
       ),
       child: flag
           ? Center(
@@ -133,15 +132,28 @@ class _ChessboardState extends State<Chessboard> {
     bool isMine = config.boardStates[row][col][0];
 
     if (isMine) {
-      config.setGameOver();
-      Navigator.pop(context);
+      config.setGameOver(); // 游戏结束
     }
 
     return Container(
       child: Center(
         child: isMine
-            ? Icon(Icons.add_circle)
-            : (num != 0 ? Text("$num") : null),
+            ? Icon(
+                Icons.add_circle,
+                color: Colors.red,
+                size: cellWidth * 0.9,
+              )
+            : (num != 0
+                ? Text(
+                    "$num",
+                    style: TextStyle(
+                        color: Colors.green,
+                        fontFamily: "Arial",
+                        fontSize: cellWidth * 0.8,
+                        fontWeight: FontWeight.w700
+                    ),
+                  )
+                : null),
       ),
     );
   }
@@ -188,28 +200,38 @@ class _ChessboardState extends State<Chessboard> {
   }
 
   void _handleTap(row, col) {
-    setState(() {
-      int stateDisplay = config.boardStates[row][col][1];
-      if (stateDisplay == 0) {
-        config.boardStates[row][col][1] = 2;
-        // 递推周围空白网格
-        _checkAroundCell(row, col);
-      } else if (stateDisplay == 1) {
-        config.boardStates[row][col][1] = 0;
-        config.flagNumber -= 1;
-      }
-    });
+    if (config.isGameContinue()) {
+      setState(() {
+        int stateDisplay = config.boardStates[row][col][1];
+        if (stateDisplay == 0) {
+          if (config.firstTap) {
+            while (config.boardStates[row][col][0] || _countMinesAround(row, col) > 0) {
+              config.spawnMines();
+            }
+            config.firstTap = false;
+          }
+          config.boardStates[row][col][1] = 2;
+          // 递推周围空白网格
+          _checkAroundCell(row, col);
+        } else if (stateDisplay == 1) {
+          config.boardStates[row][col][1] = 0;
+          config.flagNumber -= 1;
+        }
+      });
+    }
   }
 
   void _handleLongPress(row, col) {
-    setState(() {
-      int stateDisplay = config.boardStates[row][col][1];
-      if (stateDisplay == 0) {
-        config.boardStates[row][col][1] = 1;
-        config.flagNumber += 1;
-      } else if (stateDisplay == 1) {
-        config.boardStates[row][col][1] = 0;
-      }
-    });
+    if (config.isGameContinue()) {
+      setState(() {
+        int stateDisplay = config.boardStates[row][col][1];
+        if (stateDisplay == 0) {
+          config.boardStates[row][col][1] = 1;
+          config.flagNumber += 1;
+        } else if (stateDisplay == 1) {
+          config.boardStates[row][col][1] = 0;
+        }
+      });
+    }
   }
 }

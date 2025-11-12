@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
-import 'timebar.dart';
+import 'game.dart';
 import 'appbar.dart';
-import 'board.dart';
 import 'config.dart';
 
 void main() {
@@ -28,58 +27,58 @@ class MyApp extends StatelessWidget {
 class MenuPage extends StatelessWidget {
 
   // 游戏配置文件
-  final gameConfig = GameConfig(boardRows: 18, boardCols: 32, mineNumber: 99);
+  late var _gameConfig;
+
+  MenuPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     final appbarHeight = screenHeight * 0.1;
+
+    _gameConfig = GameConfig(boardRows: 18, boardCols: 32, mineNumber: 99);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      appBar: CustomAppBar(title: "Minesweeper", height: appbarHeight, config: gameConfig,),
+      appBar: CustomAppBar(title: "Minesweeper", height: appbarHeight, config: _gameConfig,),
       body: Center(
-        child: ElevatedButton(
-            onPressed: ()=> _onPressedEvent(context),
-            child: Text("开始游戏")
-        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: screenWidth * 0.6,
+              height: screenHeight * 0.3,
+              child: ElevatedButton(
+                  onPressed: ()=> _onStartButtonPressed(context),
+                  child: Text("开始游戏")
+              ),
+            ),
+            SizedBox(
+              height: screenHeight * 0.1,
+              width: screenWidth,
+            ),
+            SizedBox(
+              width: screenWidth * 0.6,
+              height: screenHeight * 0.3,
+              child: ElevatedButton(
+                  onPressed: ()=> _onConfigButtonPressed(context),
+                  child: Text("游戏设置")
+              ),
+            ),
+          ],
+        )
       )
     );
   }
   
-  void _onPressedEvent(context) {
-    Navigator.push(context, MaterialPageRoute(builder: (context)=> GamePage()));
-    
+  void _onStartButtonPressed(context) {
+    _gameConfig.gameReset();
+    Navigator.push(context, MaterialPageRoute(builder: (context)=> GamePage(gameConfig: _gameConfig,)));
   }
-}
-
-class GamePage extends StatelessWidget {
-  GamePage({super.key});
-
-  // 游戏配置文件
-  final gameConfig = GameConfig(boardRows: 18, boardCols: 32, mineNumber: 99);
-
-  @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    // 调整各组件高度
-    final appbarHeight = screenHeight * 0.1;
-    final boardHeight = screenHeight * 0.8;
-    final timebarHeight = screenHeight * 0.1;
-
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      appBar: CustomAppBar(title: "Minesweeper", height: appbarHeight, config: gameConfig,),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            Chessboard(width: screenWidth, height: boardHeight, config: gameConfig,),
-            TimeBar(duration: 5 * 60, height: timebarHeight, config: gameConfig,),
-          ],
-        ),
-      ),
-    );
+  
+  void _onConfigButtonPressed(context) {
+    
   }
 }
 
