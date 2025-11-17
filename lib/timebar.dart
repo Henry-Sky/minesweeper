@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:minesweeper/config.dart';
+import 'package:minesweeper/manager.dart';
 
 class TimeBar extends StatefulWidget {
   final int duration; // 倒计时总时长（秒）
   final double height;
-  final GameConfig config;
+  final GameManager manager;
 
-  const TimeBar({super.key, required this.duration, required this.height, required this.config});
+  const TimeBar({super.key, required this.duration, required this.height, required this.manager});
 
   @override
   createState() => _TimeBarState();
@@ -16,14 +16,14 @@ class TimeBar extends StatefulWidget {
 class _TimeBarState extends State<TimeBar> {
   int _secondsRemaining = 0;
   Timer? _timer;
-  late GameConfig config;
+  late GameManager config;
 
   @override
   void initState() {
     super.initState();
     _secondsRemaining = widget.duration;
     _startTimer();
-    config = widget.config;
+    config = widget.manager;
   }
 
   void _startTimer() {

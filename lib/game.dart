@@ -2,31 +2,62 @@ import 'package:flutter/material.dart';
 import 'timebar.dart';
 import 'appbar.dart';
 import 'board.dart';
-import 'config.dart';
+import 'manager.dart';
+import 'preferences.dart';
 
-class GamePage extends StatelessWidget {
-  GamePage({super.key, required this.gameConfig});
+class GamePage extends StatefulWidget {
+  const GamePage({super.key});
 
-  // 游戏配置文件
-  late GameConfig gameConfig;
+  @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> {
+  GameManager? gameManager;          // ① 先置空
+
+  @override
+  void initState() {
+    super.initState();
+    _initManager();                  // ② 异步初始化
+  }
+
+  Future<void> _initManager() async {
+    final orientation = await Prefs.getOrientation();
+    final manager = orientation == 'landscape'
+        ? GameManager(boardRows: 18, boardCols: 32, mineNumber: 99)
+        : GameManager(boardRows: 32, boardCols: 18, mineNumber: 99);
+    setState(() => gameManager = manager); // ③ 拿到后再刷新
+  }
 
   @override
   Widget build(BuildContext context) {
+    // ④ 数据还没回来，先给加载占位
+    if (gameManager == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    // 调整各组件高度
     final appbarHeight = screenHeight * 0.1;
     final boardHeight = screenHeight * 0.8;
     final timebarHeight = screenHeight * 0.1;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      appBar: CustomAppBar(title: "Minesweeper", height: appbarHeight, config: gameConfig,),
+      appBar: CustomAppBar(title: 'Minesweeper', height: appbarHeight),
       body: Center(
         child: Column(
-          children: <Widget>[
-            Chessboard(width: screenWidth, height: boardHeight, config: gameConfig,),
-            TimeBar(duration: 5 * 60, height: timebarHeight, config: gameConfig,),
+          children: [
+            Chessboard(
+              width: screenWidth,
+              height: boardHeight,
+              manager: gameManager!, // ⑤ 非空断言，此时一定有值
+            ),
+            TimeBar(
+              duration: 5 * 60,
+              height: timebarHeight,
+              manager: gameManager!,
+            ),
           ],
         ),
       ),

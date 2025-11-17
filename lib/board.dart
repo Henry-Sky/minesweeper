@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:minesweeper/config.dart';
+import 'package:minesweeper/manager.dart';
 
 class Chessboard extends StatefulWidget {
   final double width;
   final double height;
-  final GameConfig config;
+  final GameManager manager;
 
   const Chessboard({
     super.key,
     required this.width,
     required this.height,
-    required this.config,
+    required this.manager,
   });
 
   @override
@@ -18,7 +18,7 @@ class Chessboard extends StatefulWidget {
 }
 
 class _ChessboardState extends State<Chessboard> {
-  late GameConfig config;
+  late GameManager config;
   late double boardWidth;
   late double boardHeight;
   late double gridWidth;
@@ -40,7 +40,7 @@ class _ChessboardState extends State<Chessboard> {
 
   @override
   Widget build(BuildContext context) {
-    config = widget.config;
+    config = widget.manager;
     double bias = config.boardCols / config.boardRows;
     if ((widget.width - borderWidth * 2) / (widget.height - borderWidth * 2) >
         bias) {

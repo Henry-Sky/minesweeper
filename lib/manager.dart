@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:tuple/tuple.dart';
 
-class GameConfig {
+class GameManager {
   final int boardRows;
   final int boardCols;
   final int mineNumber;
@@ -13,7 +13,7 @@ class GameConfig {
   // 网格状态：Tuple<bool,int>，bool表示是否埋雷，int表示显示状态（0 遮盖，1 插旗，2 无遮盖）
   late List<List<List<dynamic>>> boardStates;
 
-  GameConfig({required this.boardRows, required this.boardCols, required this.mineNumber}) {
+  GameManager({required this.boardRows, required this.boardCols, required this.mineNumber}) {
     gameReset();
   }
 

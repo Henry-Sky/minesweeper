@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:minesweeper/config.dart';
+import 'preferences.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final double height;
-  final GameConfig config;
 
   const CustomAppBar({
     super.key,
     required this.title,
-    required this.config,
     this.height = kToolbarHeight,
   });
 
